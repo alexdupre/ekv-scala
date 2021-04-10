@@ -1,3 +1,3 @@
 package com.alexdupre.ekv
 
-class MarshalerException(e: Throwable) extends RuntimeException(e)
+class MarshalerException(msg: String, e: Throwable = null) extends RuntimeException(msg, e)

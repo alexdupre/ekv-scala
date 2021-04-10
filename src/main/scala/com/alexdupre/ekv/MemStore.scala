@@ -11,8 +11,8 @@ class MemStore extends KeyValue {
     store.put(key, m.marshal(value))
   }
 
-  override def get[T: Unmarshaler](key: String): Option[T] = {
-    val m = implicitly[Unmarshaler[T]]
+  override def get[T: Marshaler](key: String): Option[T] = {
+    val m = implicitly[Marshaler[T]]
     Option(store.get(key)).map(m.unmarshal)
   }
 

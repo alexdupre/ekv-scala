@@ -12,17 +12,17 @@ trait KeyValue {
 
   @throws[IOException]
   @throws[CryptoException]
-  @throws[UnmarshalerException]
+  @throws[MarshalerException]
   @throws[NoSuchElementException]
-  def apply[T: Unmarshaler](key: String): T = get(key) match {
+  def apply[T: Marshaler](key: String): T = get(key) match {
     case Some(v) => v
     case None    => throw new NoSuchElementException
   }
 
   @throws[IOException]
   @throws[CryptoException]
-  @throws[UnmarshalerException]
-  def get[T: Unmarshaler](key: String): Option[T]
+  @throws[MarshalerException]
+  def get[T: Marshaler](key: String): Option[T]
 
   @throws[IOException]
   def delete(key: String): Unit

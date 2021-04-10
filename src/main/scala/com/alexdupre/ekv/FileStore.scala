@@ -2,7 +2,7 @@ package com.alexdupre.ekv
 
 import org.bouncycastle.util.Arrays
 import org.bouncycastle.util.encoders.Hex
-import os.{FilePath, Path, RelPath, SubPath}
+import os.Path
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.NoSuchFileException
@@ -20,11 +20,7 @@ class FileStore(basedir: String, password: String, rng: Random = new SecureRando
 
   private val keyLocks = mutable.Map.empty[String, ReentrantReadWriteLock]
 
-  val basePath = FilePath(basedir) match {
-    case relative: RelPath => os.pwd / relative
-    case sub: SubPath      => os.pwd / sub
-    case absolute: Path    => absolute
-  }
+  val basePath = Path(basedir, os.pwd)
 
   init()
 
@@ -82,7 +78,7 @@ class FileStore(basedir: String, password: String, rng: Random = new SecureRando
     } finally lck.writeLock().unlock()
   }
 
-  override def get[T: Unmarshaler](key: String): Option[T] = {
+  override def get[T: Marshaler](key: String): Option[T] = {
     val encryptedKey = getKey(key)
     val lck          = getLock(encryptedKey)
     lck.readLock().lock()
@@ -92,7 +88,7 @@ class FileStore(basedir: String, password: String, rng: Random = new SecureRando
           read(basePath, encryptedKey)
         } finally lck.readLock().unlock()
       val decryptedContents = decrypt(encryptedContents, password)
-      val m                 = implicitly[Unmarshaler[T]]
+      val m                 = implicitly[Marshaler[T]]
       Some(m.unmarshal(decryptedContents))
     } catch {
       case _: NoSuchFileException => None

@@ -9,7 +9,7 @@ object FileStoreTest extends TestSuite {
     new FileStore(path.toString, password)
   }
   val tests = Tests {
-    import Marshalers._
+    import DefaultMarshalers.Implicits._
     test("Smoke") {
       val s = newFileStore(".ekv_testdir")
       s("TestMe123") = "Hi"

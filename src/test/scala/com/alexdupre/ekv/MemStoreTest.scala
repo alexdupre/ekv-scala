@@ -4,7 +4,7 @@ import utest._
 
 object MemStoreTest extends TestSuite {
   val tests = Tests {
-    import Marshalers._
+    import DefaultMarshalers.Implicits._
     val s = new MemStore
     test("Smoke") {
       s("TestMe123") = "Hi"

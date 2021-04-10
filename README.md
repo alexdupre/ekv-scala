@@ -53,27 +53,32 @@ trait KeyValue {
 }
 ```
 
-EKV works with any object for which a
-[Marshaler](https://github.com/alexdupre/ekv-scala/blob/master/src/main/scala/com/alexdupre/ekv/Marshaler.scala) and an
-[Unmarshaler](https://github.com/alexdupre/ekv-scala/blob/master/src/main/scala/com/alexdupre/ekv/Unmarshaler.scala) are defined:
+EKV works with any object for which an implicit
+[Marshaler](https://github.com/alexdupre/ekv-scala/blob/master/src/main/scala/com/alexdupre/ekv/Marshaler.scala)
+is defined:
 
 ```scala
 trait Marshaler[T] {
   def marshal(o: T): Array[Byte]
-}
-
-trait Unmarshaler[T] {
-   def unmarshal(b: Array[Byte]): T
+  def unmarshal(b: Array[Byte]): T
 }
 ```
 
-For example, we can make a marshalable String with:
+For example, we can make the `String` class marshalable with:
 
 ```scala
-  implicit def StringMarshaler = new Marshaler[String] with Unmarshaler[String] {
-    override def marshal(o: String): Array[Byte]   = o.getBytes(StandardCharsets.UTF_8)
-    override def unmarshal(b: Array[Byte]): String = new String(b, StandardCharsets.UTF_8)
-  }
+  implicit val string = new Marshaler[String] {
+   override def marshal(o: String): Array[Byte]   = o.getBytes(StandardCharsets.UTF_8)
+   override def unmarshal(b: Array[Byte]): String = new String(b, StandardCharsets.UTF_8)
+}
+```
+
+A few pre-defined marshalers for `String` and `Array[Byte]` can be found in the
+[DefaultMarshalers](https://github.com/alexdupre/ekv-scala/blob/master/src/main/scala/com/alexdupre/ekv/DefaultMarshalers.scala)
+object, and we can import them with:
+
+```scala
+import com.alexdupre.ekv.DefaultMarshalers.Implicits._
 ```
 
 To load and store to the EKV with this implicit marshaler:

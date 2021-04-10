@@ -4,7 +4,7 @@ import utest._
 
 object CompatibilityTest extends TestSuite {
   val tests = Tests {
-    import Marshalers._
+    import DefaultMarshalers.Implicits._
     test("Go Implementation") {
       val path = os.pwd / "target" / ".ekv_testdir_compat"
       os.remove.all(path)
